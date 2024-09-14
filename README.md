@@ -96,6 +96,15 @@ bun test
 This project uses the Shadcn UI Kit to style the components.
 The components used are:
 
+- Data Table
+- Button
+- Dropdown Menu
+- Dialog
+- Input
+- Table
+- Skeleton
+- Pagination
+
 ## License
 
 This project is licensed under the MIT License.
