@@ -91,6 +91,11 @@ pnpm test
 bun test
 ```
 
+## Shadcn UI Kit
+
+This project uses the Shadcn UI Kit to style the components.
+The components used are:
+
 ## License
 
 This project is licensed under the MIT License.
