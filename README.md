@@ -94,6 +94,7 @@ bun test
 ## Shadcn UI Kit
 
 This project uses the Shadcn UI Kit to style the components.
+
 The components used are:
 
 - Data Table
@@ -104,6 +105,14 @@ The components used are:
 - Table
 - Skeleton
 - Pagination
+
+# Chart.js
+
+This project uses Chart.js to display charts.
+
+The components used are:
+
+- Pie Chart
 
 ## License
 
