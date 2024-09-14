@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Character, CharactersResponse } from '../types/character';
 
@@ -26,7 +26,6 @@ const initialState: CharactersState = {
   sortOrder: 'asc',
 };
 
-// Async thunk to fetch characters
 export const fetchCharacters = createAsyncThunk<
   CharactersResponse,
   void,
@@ -51,26 +50,26 @@ export const fetchCharacters = createAsyncThunk<
   }
 });
 
-const charactersSlice = createSlice({
+const characterSlice = createSlice({
   name: 'characters',
   initialState,
   reducers: {
-    setPage(state, action: PayloadAction<number>) {
+    setPage(state, action) {
       state.page = action.payload;
     },
-    setPageSize(state, action: PayloadAction<number>) {
+    setPageSize(state, action) {
       state.pageSize = action.payload;
-      state.page = 1; // Reset to first page when page size changes
+      state.page = 1;
     },
-    setSearchQuery(state, action: PayloadAction<string>) {
+    setSearchQuery(state, action) {
       state.searchQuery = action.payload;
-      state.page = 1; // Reset to first page when search query changes
+      state.page = 1;
     },
-    setFilterTVShow(state, action: PayloadAction<string>) {
+    setFilterTVShow(state, action) {
       state.filterTVShow = action.payload;
-      state.page = 1; // Reset to first page when filter changes
+      state.page = 1;
     },
-    setSortOrder(state, action: PayloadAction<'asc' | 'desc'>) {
+    setSortOrder(state, action) {
       state.sortOrder = action.payload;
     },
   },
@@ -98,6 +97,6 @@ export const {
   setSearchQuery,
   setFilterTVShow,
   setSortOrder,
-} = charactersSlice.actions;
+} = characterSlice.actions;
 
-export default charactersSlice.reducer;
+export default characterSlice.reducer;
