@@ -1,10 +1,10 @@
 import React from 'react';
-import { Meta, StoryFn } from '@storybook/react'; // Use StoryFn instead of Story
+import { Meta, StoryFn } from '@storybook/react';
 import { Provider } from 'react-redux';
 import CharacterModal from './CharacterModal';
-import { createMockStore } from './mockStore'; // Ensure mockStore.ts is correctly exported and located
+import { createMockStore } from './mockStore';
 import { Character } from '../../types/character';
-import { CharacterModalProps } from './CharacterModal'; // Ensure this is the correct path to import props
+import { CharacterModalProps } from './CharacterModal';
 
 const sampleCharacter: Character = {
   _id: 1,

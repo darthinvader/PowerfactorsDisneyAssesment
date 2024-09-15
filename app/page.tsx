@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchCharacters, openModal } from '../store/characterSlice';
 import CharacterModal from '../components/characterModal/CharacterModal';
+import PieChart from '@/components/pieChart/PieChart';
 
 const HomePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -27,7 +28,7 @@ const HomePage: React.FC = () => {
       */}
 
       {/* Pie Chart Component */}
-
+      <PieChart />
       {/* Modal Component */}
       <CharacterModal isOpen={isModalOpen} characterId={selectedCharacterId} />
     </div>
