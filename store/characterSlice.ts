@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { Character, CharactersResponse } from '../types/character';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
+import { Character, CharactersResponse } from "../types/character";
 
 export interface CharactersState {
   characters: Character[];
@@ -11,7 +11,9 @@ export interface CharactersState {
   totalPages: number;
   searchQuery: string;
   filterTVShow: string;
-  sortOrder: 'asc' | 'desc';
+  sortOrder: "asc" | "desc";
+  isModalOpen: boolean;
+  selectedCharacterId: number | null;
 }
 
 const initialState: CharactersState = {
@@ -21,9 +23,11 @@ const initialState: CharactersState = {
   page: 1,
   pageSize: 50,
   totalPages: 0,
-  searchQuery: '',
-  filterTVShow: '',
-  sortOrder: 'asc',
+  searchQuery: "",
+  filterTVShow: "",
+  sortOrder: "asc",
+  isModalOpen: false,
+  selectedCharacterId: null,
 };
 
 export const fetchCharacters = createAsyncThunk<
@@ -54,6 +58,14 @@ const characterSlice = createSlice({
   name: 'characters',
   initialState,
   reducers: {
+    openModal: (state, action: PayloadAction<number>) => {
+      state.isModalOpen = true;
+      state.selectedCharacterId = action.payload;
+    },
+    closeModal: (state) => {
+      state.isModalOpen = false;
+      state.selectedCharacterId = null;
+    },
     setPage(state, action) {
       state.page = action.payload;
     },
@@ -97,6 +109,9 @@ export const {
   setSearchQuery,
   setFilterTVShow,
   setSortOrder,
+  openModal,
+  closeModal,
 } = characterSlice.actions;
+
 
 export default characterSlice.reducer;

@@ -26,6 +26,8 @@ describe('characterSlice', () => {
     searchQuery: '',
     filterTVShow: '',
     sortOrder: 'asc',
+    isModalOpen: false,
+    selectedCharacterId: null,
   };
 
   it('should handle initial state', () => {
