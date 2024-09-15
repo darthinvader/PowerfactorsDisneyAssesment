@@ -117,3 +117,8 @@ The components used are:
 ## License
 
 This project is licensed under the MIT License.
+
+TODO: Add testing for store
+TODO: Add Modal and testing, add storybook for modal
+TODO: Add PieChart and testing, add storybook for PieChart
+TODO: Add DataTable and testing, add storybook for DataTable

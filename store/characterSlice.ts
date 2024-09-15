@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Character, CharactersResponse } from '../types/character';
 
-interface CharactersState {
+export interface CharactersState {
   characters: Character[];
   loading: boolean;
   error: string | null;
