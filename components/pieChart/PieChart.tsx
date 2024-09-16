@@ -1,50 +1,32 @@
-// /components/pieChart/PieChart.tsx
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useAppSelector } from '../../store/hooks';
 import { Character } from '../../types/character';
 import * as XLSX from 'xlsx';
 
-interface ChartDataPoint {
-  name: string;
-  y: number;
-  custom: {
-    films: string[];
-  };
-}
-
 const PieChart: React.FC = () => {
   const { characters } = useAppSelector((state) => state.characters);
-  const [options, setOptions] = useState<Highcharts.Options | null>(null);
 
-  useEffect(() => {
-    if (!characters || characters.length === 0) {
-      setOptions(null);
-      return;
-    }
+  // Memoize chart data to prevent unnecessary recalculations
+  const chartData = useMemo(() => {
+    return characters.map((character: Character) => ({
+      name: character.name,
+      y: character.films ? character.films.length : 0,
+      films: character.films || [],
+    }));
+  }, [characters]);
 
-    // Prepare data for the pie chart
-    const chartData: ChartDataPoint[] = characters.map(
-      (character: Character) => ({
-        name: character.name,
-        y: character.films ? character.films.length : 0,
-        custom: {
-          films: character.films || [],
-        },
-      })
-    );
+  const totalFilms = useMemo(() => {
+    return chartData.reduce((acc, point) => acc + point.y, 0);
+  }, [chartData]);
 
-    // Handle case where all characters have zero films
-    const totalFilms = chartData.reduce((acc, point) => acc + point.y, 0);
+  const options: Highcharts.Options = useMemo(() => {
     if (totalFilms === 0) {
-      setOptions(null);
-      return;
+      return {};
     }
 
-    // Configure Highcharts options
-    const chartOptions: Highcharts.Options = {
+    return {
       chart: {
         type: 'pie',
       },
@@ -52,14 +34,12 @@ const PieChart: React.FC = () => {
         text: 'Number of Films per Character',
       },
       tooltip: {
-        formatter: function (this: Highcharts.TooltipFormatterContextObject) {
-          const point = this.point as Highcharts.Point & {
-            custom?: { films: string[] };
-          };
-          const filmsList = point.custom?.films?.length
-            ? point.custom.films.join(', ')
+        pointFormatter: function () {
+          const point = this as Highcharts.Point & { films: string[] };
+          const filmsList = point.films.length
+            ? point.films.join(', ')
             : 'No Films';
-          return `<b>${point.name}</b>: ${this.percentage?.toFixed(2)}%<br/>Films: ${filmsList}`;
+          return `<b>${point.name}</b>: ${Highcharts.numberFormat(this.percentage!, 2)}%<br/>Films: ${filmsList}`;
         },
       },
       plotOptions: {
@@ -80,9 +60,7 @@ const PieChart: React.FC = () => {
         },
       ],
     };
-
-    setOptions(chartOptions);
-  }, [characters]);
+  }, [chartData, totalFilms]);
 
   /**
    * Exports the chart data to an XLSX file.
@@ -101,8 +79,12 @@ const PieChart: React.FC = () => {
     XLSX.writeFile(workbook, 'characters_films.xlsx');
   };
 
-  if (!options) {
-    return <div className="mt-8">No data available for the pie chart.</div>;
+  if (totalFilms === 0 || !options) {
+    return (
+      <div className="mt-8 text-center">
+        No film data available to display the pie chart.
+      </div>
+    );
   }
 
   return (
