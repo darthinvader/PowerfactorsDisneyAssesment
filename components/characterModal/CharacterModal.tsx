@@ -66,7 +66,7 @@ const CharacterModal: React.FC = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="p-6 max-h-[80vh] overflow-y-auto">
+      <DialogContent className="p-6">
         <DialogHeader>
           <DialogTitle id="character-modal-title">
             {loading ? (
@@ -139,7 +139,7 @@ const CharacterModal: React.FC = () => {
         <DialogFooter>
           <Button
             onClick={handleClose}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className=" mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Close
           </Button>

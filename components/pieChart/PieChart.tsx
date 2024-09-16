@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useAppSelector } from '../../store/hooks';
@@ -81,24 +81,31 @@ const PieChart: React.FC = () => {
 
   if (totalFilms === 0 || !options) {
     return (
-      <div className="mt-8 text-center">
-        No film data available to display the pie chart.
+      <div className="flex items-center justify-center h-full">
+        <p className="text-center text-gray-500">
+          No film data available to display the pie chart.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="relative h-full flex flex-col pt-12">
-      <button
-        onClick={exportToExcel}
-        disabled={totalFilms === 0}
-        className={`absolute top-0 right-0 z-10 mt-2 mr-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 ${
-          totalFilms === 0 ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-        aria-disabled={totalFilms === 0}
-      >
-        Export to Excel
-      </button>
+    <div className="relative h-full flex flex-col">
+      {/* Export Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={exportToExcel}
+          disabled={totalFilms === 0}
+          className={`mt-0 mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 ${
+            totalFilms === 0 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          aria-disabled={totalFilms === 0}
+        >
+          Export to Excel
+        </button>
+      </div>
+
+      {/* Pie Chart */}
       <div className="flex-1">
         <HighchartsReact highcharts={Highcharts} options={options} />
       </div>

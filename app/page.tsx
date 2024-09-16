@@ -7,17 +7,24 @@ import DataTable from '@/components/dataTable/DataTable';
 
 const HomePage: React.FC = () => {
   return (
-    <div className="container mx-auto p-4 h-screen flex flex-col">
-      <h1 className="text-2xl font-bold mb-4">Disney Characters Dashboard</h1>
+    <div className="flex flex-col h-screen">
+      <header className="h-16 flex items-center justify-center bg-gray-100 p-2">
+        <h1 className="text-2xl font-bold">Disney Characters Dashboard</h1>
+      </header>
 
-      <div className="flex flex-col md:flex-row flex-1">
-        <div className="md:w-1/2 w-full  max-h-[90vh] overflow-y-auto mb-4 md:mb-0 md:pr-2 h-full ">
+      <main className="flex-1 flex flex-col md:flex-row">
+        <div
+          className="md:w-1/2 w-full overflow-y-auto p-4 "
+          style={{ maxHeight: 'calc(100vh - 64px)' }}
+        >
           <DataTable />
         </div>
-        <div className="md:w-1/2 w-full md:pl-2 h-full flex flex-col">
+
+        <div className="md:w-1/2 w-full flex-1 p-4 flex flex-col">
           <PieChart />
         </div>
-      </div>
+      </main>
+
       <CharacterModal />
     </div>
   );
