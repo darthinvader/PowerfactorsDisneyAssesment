@@ -8,6 +8,7 @@ import {
   getSortedRowModel,
   useReactTable,
   SortingState,
+  Row,
 } from '@tanstack/react-table';
 import { columns } from './columns';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
@@ -37,6 +38,7 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import useDebounce from '../../hooks/useDebounce';
+import { Character } from '@/types/character';
 
 const DataTable: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -92,7 +94,7 @@ const DataTable: React.FC = () => {
     getSortedRowModel: useMemo(() => getSortedRowModel(), []),
   });
 
-  const handleRowClick = (row: any) => {
+  const handleRowClick = (row: Row<Character>) => {
     const characterId = row.original._id;
     dispatch(openModal(characterId));
   };
