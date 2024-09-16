@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -9,7 +9,6 @@ import {
   useReactTable,
   SortingState,
 } from '@tanstack/react-table';
-
 import { columns } from './columns';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import {
@@ -20,7 +19,6 @@ import {
   setFilterTVShow,
   openModal,
 } from '../../store/characterSlice';
-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -38,6 +36,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import useDebounce from '../../hooks/useDebounce';
 
 const DataTable: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -53,18 +52,15 @@ const DataTable: React.FC = () => {
     filterTVShow,
   } = useAppSelector((state) => state.characters);
 
-  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
-  const [debouncedFilter, setDebouncedFilter] = useState(filterTVShow);
+  const [searchInput, setSearchInput] = useState(searchQuery);
+  const [filterInput, setFilterInput] = useState(filterTVShow);
+
+  const debouncedSearch = useDebounce(searchInput, 400);
+  const debouncedFilter = useDebounce(filterInput, 400);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      dispatch(setSearchQuery(debouncedSearch));
-      dispatch(setFilterTVShow(debouncedFilter));
-    }, 400);
-
-    return () => {
-      clearTimeout(handler);
-    };
+    dispatch(setSearchQuery(debouncedSearch));
+    dispatch(setFilterTVShow(debouncedFilter));
   }, [debouncedSearch, debouncedFilter, dispatch]);
 
   useEffect(() => {
@@ -91,9 +87,9 @@ const DataTable: React.FC = () => {
       dispatch(setPage(newPageIndex + 1));
     },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getCoreRowModel: useMemo(() => getCoreRowModel(), []),
+    getPaginationRowModel: useMemo(() => getPaginationRowModel(), []),
+    getSortedRowModel: useMemo(() => getSortedRowModel(), []),
   });
 
   const handleRowClick = (row: any) => {
@@ -106,15 +102,15 @@ const DataTable: React.FC = () => {
       <div className="flex flex-wrap items-center py-4 space-x-2 mb-4">
         <Input
           placeholder="Search characters..."
-          value={debouncedSearch}
-          onChange={(e) => setDebouncedSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
           className="max-w-xs"
           aria-label="Search characters"
         />
         <Input
           placeholder="Filter by TV Show..."
-          value={debouncedFilter}
-          onChange={(e) => setDebouncedFilter(e.target.value)}
+          value={filterInput}
+          onChange={(e) => setFilterInput(e.target.value)}
           className="max-w-xs"
           aria-label="Filter by TV Show"
         />

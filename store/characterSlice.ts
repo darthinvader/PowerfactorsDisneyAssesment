@@ -3,8 +3,8 @@ import axios from "axios";
 import {
   Character,
   CharactersResponse,
-  isCharacterArray,
 } from "../types/character";
+import { normalizeApiResponse } from "@/lib/utils";
 
 export interface CharactersState {
   characters: Character[];
@@ -52,10 +52,7 @@ export const fetchCharacters = createAsyncThunk<
     const response = await axios.get(url);
     const data = response.data;
 
-    // Normalize data to always be an array
-    if (!Array.isArray(data.data)) {
-      data.data = data.data ? [data.data] : [];
-    }
+    data.data = normalizeApiResponse(data);
 
     return data;
   } catch (error: any) {
