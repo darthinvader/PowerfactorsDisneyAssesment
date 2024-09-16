@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import CharacterModal from './CharacterModal';
 import { createMockStore } from './mockStore';
 import { Character } from '../../types/character';
-import { CharacterModalProps } from './CharacterModal';
 
 const sampleCharacter: Character = {
   _id: 1,
@@ -39,9 +38,7 @@ export default {
   ],
 } as Meta;
 
-const Template: StoryFn<CharacterModalProps> = (args) => (
-  <CharacterModal {...args} />
-);
+const Template: StoryFn = (args) => <CharacterModal {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

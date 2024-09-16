@@ -1,5 +1,5 @@
 import React from 'react';
-import { Story, Meta } from '@storybook/react';
+import { StoryFn, Meta } from '@storybook/react';
 import PieChart from './PieChart';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -96,7 +96,7 @@ export default {
 /**
  * Default story for the PieChart component
  */
-const Template: Story<typeof PieChart> = (args) => <PieChart {...args} />;
+const Template: StoryFn<typeof PieChart> = (args) => <PieChart {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

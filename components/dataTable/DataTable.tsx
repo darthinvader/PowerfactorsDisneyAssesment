@@ -8,7 +8,6 @@ import {
   getSortedRowModel,
   useReactTable,
   SortingState,
-  Row,
 } from '@tanstack/react-table';
 import { columns } from './columns';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
@@ -38,7 +37,6 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import useDebounce from '../../hooks/useDebounce';
-import { Character } from '@/types/character';
 
 const DataTable: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -84,9 +82,22 @@ const DataTable: React.FC = () => {
       },
     },
     onPaginationChange: (updater) => {
-      const newPageIndex =
-        typeof updater.pageIndex === 'number' ? updater.pageIndex : page - 1;
-      dispatch(setPage(newPageIndex + 1));
+      let newPageIndex: number | undefined;
+
+      if (typeof updater === 'function') {
+        // If updater is a function, call it with the current state to get the new state
+        const oldState = { pageIndex: page - 1, pageSize };
+        const updatedState = updater(oldState);
+        newPageIndex = updatedState.pageIndex;
+      } else {
+        // If updater is an object, directly access pageIndex
+        newPageIndex = updater.pageIndex;
+      }
+
+      if (typeof newPageIndex === 'number') {
+        // Dispatch the new page number (1-based)
+        dispatch(setPage(newPageIndex + 1));
+      }
     },
     onSortingChange: setSorting,
     getCoreRowModel: useMemo(() => getCoreRowModel(), []),
@@ -94,7 +105,7 @@ const DataTable: React.FC = () => {
     getSortedRowModel: useMemo(() => getSortedRowModel(), []),
   });
 
-  const handleRowClick = (row: Row<Character>) => {
+  const handleRowClick = (row: any) => {
     const characterId = row.original._id;
     dispatch(openModal(characterId));
   };
