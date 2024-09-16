@@ -12,22 +12,17 @@ import {
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Character } from '../../types/character';
-import { useAppDispatch } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { closeModal } from '../../store/characterSlice';
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import axios from 'axios';
 
-interface CharacterModalProps {
-  isOpen: boolean;
-  characterId: number | null;
-}
-
-const CharacterModal: React.FC<CharacterModalProps> = ({
-  isOpen,
-  characterId,
-}) => {
+const CharacterModal: React.FC = () => {
   const dispatch = useAppDispatch();
+  const { isModalOpen, selectedCharacterId } = useAppSelector(
+    (state) => state.characters
+  );
   const [character, setCharacter] = useState<Character | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,18 +30,18 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
 
   useEffect(() => {
     const loadCharacter = async () => {
-      if (!characterId) return;
-      if (characterCache.current[characterId]) {
-        setCharacter(characterCache.current[characterId]);
+      if (!selectedCharacterId) return;
+      if (characterCache.current[selectedCharacterId]) {
+        setCharacter(characterCache.current[selectedCharacterId]);
         return;
       }
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get(
-          `https://api.disneyapi.dev/character/${characterId}`
+          `https://api.disneyapi.dev/character/${selectedCharacterId}`
         );
-        characterCache.current[characterId] = response.data.data;
+        characterCache.current[selectedCharacterId] = response.data.data;
         setCharacter(response.data.data);
       } catch (err: any) {
         setError(
@@ -59,12 +54,12 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
       }
     };
 
-    if (isOpen && characterId) {
+    if (isModalOpen && selectedCharacterId) {
       loadCharacter();
     } else {
       setCharacter(null);
     }
-  }, [isOpen, characterId]);
+  }, [isModalOpen, selectedCharacterId]);
 
   const handleClose = () => {
     dispatch(closeModal());
@@ -72,7 +67,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
 
   return (
     <Dialog
-      open={isOpen}
+      open={isModalOpen}
       onOpenChange={handleClose}
       aria-labelledby="character-modal-title"
     >

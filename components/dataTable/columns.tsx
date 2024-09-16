@@ -23,7 +23,7 @@ export const columns: ColumnDef<Character>[] = [
   {
     id: 'numTVShows',
     header: () => <div className="text-right"># TV Shows</div>,
-    accessorFn: (row) => row.tvShows.length,
+    accessorFn: (row) => (row.tvShows ? row.tvShows.length : 0),
     cell: ({ row }) => (
       <div className="text-right">{row.getValue('numTVShows')}</div>
     ),
@@ -31,7 +31,7 @@ export const columns: ColumnDef<Character>[] = [
   {
     id: 'numVideoGames',
     header: () => <div className="text-right"># Video Games</div>,
-    accessorFn: (row) => row.videoGames.length,
+    accessorFn: (row) => (row.videoGames ? row.videoGames.length : 0),
     cell: ({ row }) => (
       <div className="text-right">{row.getValue('numVideoGames')}</div>
     ),

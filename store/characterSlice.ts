@@ -50,10 +50,19 @@ export const fetchCharacters = createAsyncThunk<
 
   try {
     const response = await axios.get(url);
-    return response.data;
+    const data = response.data;
+
+    // Normalize data to always be an array
+    if (!Array.isArray(data.data)) {
+      data.data = data.data ? [data.data] : [];
+    }
+
+    return data;
   } catch (error: any) {
     const errorMessage =
-      error.response?.data?.error || error.message || "Failed to fetch characters";
+      error.response?.data?.error ||
+      error.message ||
+      "Failed to fetch characters";
     return rejectWithValue(errorMessage);
   }
 });
@@ -94,15 +103,7 @@ const characterSlice = createSlice({
       })
       .addCase(fetchCharacters.fulfilled, (state, action) => {
         state.loading = false;
-
-        if (isCharacterArray(action.payload.data)) {
-          state.characters = action.payload.data;
-        } else if (action.payload.data) {
-          state.characters = [action.payload.data];
-        } else {
-          state.characters = [];
-        }
-
+        state.characters = action.payload.data as Character[];
         state.totalPages = action.payload.info?.totalPages || 0;
       })
       .addCase(fetchCharacters.rejected, (state, action) => {
