@@ -99,37 +99,39 @@ const DataTable: React.FC = () => {
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center py-4 space-x-2 mb-4">
-        <Input
-          placeholder="Search characters..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          className="max-w-xs"
-          aria-label="Search characters"
-        />
-        <Input
-          placeholder="Filter by TV Show..."
-          value={filterInput}
-          onChange={(e) => setFilterInput(e.target.value)}
-          className="max-w-xs"
-          aria-label="Filter by TV Show"
-        />
-        <Select
-          value={String(pageSize)}
-          onValueChange={(value) => dispatch(setPageSize(Number(value)))}
-          aria-label="Select number of rows per page"
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder={`${pageSize} rows`} />
-          </SelectTrigger>
-          <SelectContent>
-            {[10, 20, 50, 100, 200, 500].map((size) => (
-              <SelectItem key={size} value={String(size)}>
-                Show {size}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex flex-wrap items-center py-4 md:space-x-2 mb-4">
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-2 w-full">
+          <Input
+            placeholder="Search characters..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="w-full md:max-w-xs mb-2 md:mb-0"
+            aria-label="Search characters"
+          />
+          <Input
+            placeholder="Filter by TV Show..."
+            value={filterInput}
+            onChange={(e) => setFilterInput(e.target.value)}
+            className="w-full md:max-w-xs mb-2 md:mb-0"
+            aria-label="Filter by TV Show"
+          />
+          <Select
+            value={String(pageSize)}
+            onValueChange={(value) => dispatch(setPageSize(Number(value)))}
+            aria-label="Select number of rows per page"
+          >
+            <SelectTrigger className="w-full md:w-[150px]">
+              <SelectValue placeholder={`${pageSize} rows`} />
+            </SelectTrigger>
+            <SelectContent>
+              {[10, 20, 50, 100, 200, 500].map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  Show {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="rounded-md border overflow-x-auto">
         <Table>
@@ -203,13 +205,15 @@ const DataTable: React.FC = () => {
       {/* Pagination controls */}
       <div className="flex items-center justify-between py-4">
         <div>
-          Page {page} of {totalPages}
+          {totalPages > 0
+            ? `Page ${page} of ${totalPages}`
+            : 'No pages to display'}
         </div>
         <div className="flex space-x-2">
           <Button
             variant="outline"
             onClick={() => dispatch(setPage(page - 1))}
-            disabled={page <= 1}
+            disabled={page <= 1 || totalPages === 0}
             aria-label="Previous Page"
           >
             Previous
@@ -217,7 +221,7 @@ const DataTable: React.FC = () => {
           <Button
             variant="outline"
             onClick={() => dispatch(setPage(page + 1))}
-            disabled={page >= totalPages}
+            disabled={page >= totalPages || totalPages === 0}
             aria-label="Next Page"
           >
             Next

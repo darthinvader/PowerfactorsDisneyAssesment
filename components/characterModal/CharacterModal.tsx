@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Dialog,
-  DialogOverlay,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -66,13 +65,8 @@ const CharacterModal: React.FC = () => {
   };
 
   return (
-    <Dialog
-      open={isModalOpen}
-      onOpenChange={handleClose}
-      aria-labelledby="character-modal-title"
-    >
-      <DialogOverlay />
-      <DialogContent className="p-6">
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+      <DialogContent className="p-6 max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle id="character-modal-title">
             {loading ? (
@@ -86,15 +80,13 @@ const CharacterModal: React.FC = () => {
               <>
                 <Skeleton className="h-32 w-32 rounded-md mb-4" />
                 <div className="mb-4">
-                  <Skeleton className="h-4 w-3/4 mb-2" />{' '}
-                  {/* TV Shows Header */}
+                  <Skeleton className="h-4 w-3/4 mb-2" />
                   {[...Array(3)].map((_, index) => (
                     <Skeleton key={index} className="h-4 w-full mb-2" />
                   ))}
                 </div>
                 <div>
-                  <Skeleton className="h-4 w-3/4 mb-2" />{' '}
-                  {/* Video Games Header */}
+                  <Skeleton className="h-4 w-3/4 mb-2" />
                   {[...Array(3)].map((_, index) => (
                     <Skeleton key={index} className="h-4 w-full mb-2" />
                   ))}
