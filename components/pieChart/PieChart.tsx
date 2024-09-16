@@ -1,3 +1,5 @@
+// /components/pieChart/PieChart.tsx
+
 import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
@@ -5,30 +7,41 @@ import { useAppSelector } from '../../store/hooks';
 import { Character } from '../../types/character';
 import * as XLSX from 'xlsx';
 
-/**
- * PieChart Component
- * - Displays a pie chart representing the number of films each character participates in.
- * - Updates when the character list in the Redux store changes.
- * - Allows exporting the chart data to an XLSX file.
- */
+interface ChartDataPoint {
+  name: string;
+  y: number;
+  custom: {
+    films: string[];
+  };
+}
+
 const PieChart: React.FC = () => {
   const { characters } = useAppSelector((state) => state.characters);
-  const [options, setOptions] = useState<Highcharts.Options>({});
+  const [options, setOptions] = useState<Highcharts.Options | null>(null);
 
   useEffect(() => {
-    if (characters.length === 0) {
-      setOptions({});
+    if (!characters || characters.length === 0) {
+      setOptions(null);
       return;
     }
 
     // Prepare data for the pie chart
-    const chartData = characters.map((character: Character) => ({
-      name: character.name,
-      y: character.films.length,
-      custom: {
-        films: character.films,
-      },
-    }));
+    const chartData: ChartDataPoint[] = characters.map(
+      (character: Character) => ({
+        name: character.name,
+        y: character.films ? character.films.length : 0,
+        custom: {
+          films: character.films || [],
+        },
+      })
+    );
+
+    // Handle case where all characters have zero films
+    const totalFilms = chartData.reduce((acc, point) => acc + point.y, 0);
+    if (totalFilms === 0) {
+      setOptions(null);
+      return;
+    }
 
     // Configure Highcharts options
     const chartOptions: Highcharts.Options = {
@@ -40,13 +53,13 @@ const PieChart: React.FC = () => {
       },
       tooltip: {
         formatter: function (this: Highcharts.TooltipFormatterContextObject) {
-          const point = this.point;
-          const films = (point.options as any).custom?.films as string[];
-          const filmsList =
-            films && films.length > 0 ? films.join(', ') : 'No Films';
-          return `<b>${point.name}</b>: ${this.percentage.toFixed(
-            2
-          )}%<br/>Films: ${filmsList}`;
+          const point = this.point as Highcharts.Point & {
+            custom?: { films: string[] };
+          };
+          const filmsList = point.custom?.films?.length
+            ? point.custom.films.join(', ')
+            : 'No Films';
+          return `<b>${point.name}</b>: ${this.percentage?.toFixed(2)}%<br/>Films: ${filmsList}`;
         },
       },
       plotOptions: {
@@ -77,8 +90,8 @@ const PieChart: React.FC = () => {
   const exportToExcel = () => {
     const data = characters.map((character: Character) => ({
       Name: character.name,
-      'Number of Films': character.films.length,
-      Films: character.films.join(', '),
+      'Number of Films': character.films ? character.films.length : 0,
+      Films: character.films ? character.films.join(', ') : 'No Films',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -88,12 +101,12 @@ const PieChart: React.FC = () => {
     XLSX.writeFile(workbook, 'characters_films.xlsx');
   };
 
-  if (characters.length === 0) {
-    return <div>No characters to display.</div>;
+  if (!options) {
+    return <div className="mt-8">No data available for the pie chart.</div>;
   }
 
   return (
-    <div>
+    <div className="mt-8">
       <HighchartsReact highcharts={Highcharts} options={options} />
       <button
         onClick={exportToExcel}

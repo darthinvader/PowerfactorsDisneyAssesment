@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Character, CharactersResponse } from "../types/character";
+import { Character, CharactersResponse, isCharacterArray } from "../types/character";
 
 export interface CharactersState {
   characters: Character[];
@@ -31,31 +31,35 @@ const initialState: CharactersState = {
 };
 
 export const fetchCharacters = createAsyncThunk<
-  CharactersResponse,
+  CharactersResponse | { info: CharactersResponse["info"]; data: Character },
   void,
   { state: { characters: CharactersState } }
->('characters/fetchCharacters', async (_, { getState, rejectWithValue }) => {
-  const { page, pageSize, searchQuery, filterTVShow, sortOrder } = getState().characters;
-  let url = `https://api.disneyapi.dev/character?page=${page}&pageSize=${pageSize}`;
+>(
+  "characters/fetchCharacters",
+  async (_, { getState, rejectWithValue }) => {
+    const { page, pageSize, searchQuery, filterTVShow, sortOrder } =
+      getState().characters;
+    let url = `https://api.disneyapi.dev/character?page=${page}&pageSize=${pageSize}`;
 
-  if (searchQuery) {
-    url += `&name=${encodeURIComponent(searchQuery)}`;
-  }
+    if (searchQuery) {
+      url += `&name=${encodeURIComponent(searchQuery)}`;
+    }
 
-  if (filterTVShow) {
-    url += `&tvShows=${encodeURIComponent(filterTVShow)}`;
-  }
+    if (filterTVShow) {
+      url += `&tvShows=${encodeURIComponent(filterTVShow)}`;
+    }
 
-  try {
-    const response = await axios.get<CharactersResponse>(url);
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'Failed to fetch characters');
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch characters");
+    }
   }
-});
+);
 
 const characterSlice = createSlice({
-  name: 'characters',
+  name: "characters",
   initialState,
   reducers: {
     openModal: (state, action: PayloadAction<number>) => {
@@ -66,22 +70,22 @@ const characterSlice = createSlice({
       state.isModalOpen = false;
       state.selectedCharacterId = null;
     },
-    setPage(state, action) {
+    setPage(state, action: PayloadAction<number>) {
       state.page = action.payload;
     },
-    setPageSize(state, action) {
+    setPageSize(state, action: PayloadAction<number>) {
       state.pageSize = action.payload;
       state.page = 1;
     },
-    setSearchQuery(state, action) {
+    setSearchQuery(state, action: PayloadAction<string>) {
       state.searchQuery = action.payload;
       state.page = 1;
     },
-    setFilterTVShow(state, action) {
+    setFilterTVShow(state, action: PayloadAction<string>) {
       state.filterTVShow = action.payload;
       state.page = 1;
     },
-    setSortOrder(state, action) {
+    setSortOrder(state, action: PayloadAction<"asc" | "desc">) {
       state.sortOrder = action.payload;
     },
   },
@@ -93,12 +97,22 @@ const characterSlice = createSlice({
       })
       .addCase(fetchCharacters.fulfilled, (state, action) => {
         state.loading = false;
-        state.characters = action.payload.data;
-        state.totalPages = action.payload.info.totalPages;
+
+        if (isCharacterArray(action.payload.data)) {
+          state.characters = action.payload.data;
+        } else if (action.payload.data) {
+          state.characters = [action.payload.data];
+        } else {
+          state.characters = [];
+        }
+
+        state.totalPages = action.payload.info?.totalPages || 0;
       })
       .addCase(fetchCharacters.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        state.characters = []; // Clear characters on error
+        state.totalPages = 0;
       });
   },
 });
@@ -112,6 +126,5 @@ export const {
   openModal,
   closeModal,
 } = characterSlice.actions;
-
 
 export default characterSlice.reducer;

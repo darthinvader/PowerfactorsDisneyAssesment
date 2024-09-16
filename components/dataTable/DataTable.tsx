@@ -53,7 +53,6 @@ const DataTable: React.FC<DataTableProps> = () => {
     totalPages,
     searchQuery,
     filterTVShow,
-    selectedCharacterId,
   } = useAppSelector((state) => state.characters);
 
   useEffect(() => {
@@ -67,7 +66,7 @@ const DataTable: React.FC<DataTableProps> = () => {
     data: characters,
     columns,
     manualPagination: true,
-    manualFiltering: true,
+    manualSorting: true, // Indicate manual sorting
     pageCount: totalPages,
     state: {
       sorting,
@@ -81,7 +80,11 @@ const DataTable: React.FC<DataTableProps> = () => {
         typeof updater.pageIndex === 'number' ? updater.pageIndex : page - 1;
       dispatch(setPage(newPageIndex + 1));
     },
-    onSortingChange: setSorting,
+    onSortingChange: (newSorting) => {
+      setSorting(newSorting);
+      // Optionally, dispatch an action to handle sorting in the Redux state
+      // For example: dispatch(setSortOrder(newSorting[0]?.desc ? "desc" : "asc"));
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -159,7 +162,7 @@ const DataTable: React.FC<DataTableProps> = () => {
                 <TableRow
                   key={row.id}
                   onClick={() => handleRowClick(row)}
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:bg-gray-100"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

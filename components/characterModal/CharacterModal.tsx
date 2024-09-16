@@ -27,7 +27,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const character = useAppSelector((state) =>
-    state?.characters?.characters?.find(
+    state?.characters?.characters?.find?.(
       (char: Character) => char._id === characterId
     )
   );
@@ -103,8 +103,8 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
             <div className="mb-4">
               <h3 className="font-semibold">TV Shows:</h3>
               <ul className="list-disc list-inside space-y-2">
-                {character.tvShows.length > 0 ? (
-                  character.tvShows.map((show, index) => (
+                {character?.tvShows && character?.tvShows?.length > 0 ? (
+                  character?.tvShows?.map((show, index) => (
                     <li key={index}>{show}</li>
                   ))
                 ) : (
@@ -115,8 +115,8 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
             <div>
               <h3 className="font-semibold">Video Games:</h3>
               <ul className="list-disc list-inside space-y-2">
-                {character.videoGames.length > 0 ? (
-                  character.videoGames.map((game, index) => (
+                {character?.videoGames && character?.videoGames?.length > 0 ? (
+                  character?.videoGames?.map((game, index) => (
                     <li key={index}>{game}</li>
                   ))
                 ) : (
