@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchCharacters, openModal } from '../store/characterSlice';
 import CharacterModal from '../components/characterModal/CharacterModal';
 import PieChart from '@/components/pieChart/PieChart';
-
+import DataTable from '@/components/dataTable/DataTable';
 const HomePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { characters, loading, error, isModalOpen, selectedCharacterId } =
@@ -22,14 +22,8 @@ const HomePage: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Disney Characters Dashboard</h1>
-
-      {/* Example: 
-          <DataTable characters={characters} onRowClick={handleRowClick} />
-      */}
-
-      {/* Pie Chart Component */}
+      <DataTable wonRowClick={handleRowClick} />
       <PieChart />
-      {/* Modal Component */}
       <CharacterModal isOpen={isModalOpen} characterId={selectedCharacterId} />
     </div>
   );

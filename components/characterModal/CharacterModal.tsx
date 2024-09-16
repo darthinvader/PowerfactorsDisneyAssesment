@@ -27,7 +27,7 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const character = useAppSelector((state) =>
-    state.characters.characters.find(
+    state?.characters?.characters?.find(
       (char: Character) => char._id === characterId
     )
   );
