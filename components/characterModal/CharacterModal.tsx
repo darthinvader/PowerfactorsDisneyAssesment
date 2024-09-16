@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Dialog,
   DialogOverlay,
@@ -31,16 +31,22 @@ const CharacterModal: React.FC<CharacterModalProps> = ({
   const [character, setCharacter] = useState<Character | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const characterCache = useRef<{ [key: number]: Character }>({});
 
   useEffect(() => {
     const loadCharacter = async () => {
       if (!characterId) return;
+      if (characterCache.current[characterId]) {
+        setCharacter(characterCache.current[characterId]);
+        return;
+      }
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get(
           `https://api.disneyapi.dev/character/${characterId}`
         );
+        characterCache.current[characterId] = response.data.data;
         setCharacter(response.data.data);
       } catch (err: any) {
         setError(

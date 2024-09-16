@@ -18,7 +18,6 @@ import {
   setPageSize,
   setSearchQuery,
   setFilterTVShow,
-  setSortOrder,
   openModal,
 } from '../../store/characterSlice';
 
@@ -52,10 +51,8 @@ const DataTable: React.FC = () => {
     totalPages,
     searchQuery,
     filterTVShow,
-    sortOrder,
   } = useAppSelector((state) => state.characters);
 
-  // Debounce search and filter inputs to reduce API calls
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [debouncedFilter, setDebouncedFilter] = useState(filterTVShow);
 
@@ -63,7 +60,7 @@ const DataTable: React.FC = () => {
     const handler = setTimeout(() => {
       dispatch(setSearchQuery(debouncedSearch));
       dispatch(setFilterTVShow(debouncedFilter));
-    }, 400); // 400ms debounce
+    }, 400);
 
     return () => {
       clearTimeout(handler);
@@ -72,24 +69,14 @@ const DataTable: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchCharacters());
-  }, [dispatch, page, pageSize, searchQuery, filterTVShow, sortOrder]);
+  }, [dispatch, page, pageSize, searchQuery, filterTVShow]);
 
-  // Table sorting state synchronized with Redux
   const [sorting, setSorting] = useState<SortingState>([]);
-
-  useEffect(() => {
-    if (sorting.length > 0) {
-      dispatch(setSortOrder(sorting[0].desc ? 'desc' : 'asc'));
-    } else {
-      dispatch(setSortOrder('asc'));
-    }
-  }, [sorting, dispatch]);
 
   const table = useReactTable({
     data: characters,
     columns,
     manualPagination: true,
-    manualSorting: true,
     pageCount: totalPages,
     state: {
       sorting,

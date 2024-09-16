@@ -1,6 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Character, CharactersResponse, isCharacterArray } from "../types/character";
+import {
+  Character,
+  CharactersResponse,
+  isCharacterArray,
+} from "../types/character";
 
 export interface CharactersState {
   characters: Character[];
@@ -11,7 +15,6 @@ export interface CharactersState {
   totalPages: number;
   searchQuery: string;
   filterTVShow: string;
-  sortOrder: "asc" | "desc";
   isModalOpen: boolean;
   selectedCharacterId: number | null;
 }
@@ -25,38 +28,35 @@ const initialState: CharactersState = {
   totalPages: 0,
   searchQuery: "",
   filterTVShow: "",
-  sortOrder: "asc",
   isModalOpen: false,
   selectedCharacterId: null,
 };
 
 export const fetchCharacters = createAsyncThunk<
-  CharactersResponse | { info: CharactersResponse["info"]; data: Character },
+  CharactersResponse,
   void,
   { state: { characters: CharactersState } }
->(
-  "characters/fetchCharacters",
-  async (_, { getState, rejectWithValue }) => {
-    const { page, pageSize, searchQuery, filterTVShow, sortOrder } =
-      getState().characters;
-    let url = `https://api.disneyapi.dev/character?page=${page}&pageSize=${pageSize}`;
+>("characters/fetchCharacters", async (_, { getState, rejectWithValue }) => {
+  const { page, pageSize, searchQuery, filterTVShow } = getState().characters;
+  let url = `https://api.disneyapi.dev/character?page=${page}&pageSize=${pageSize}`;
 
-    if (searchQuery) {
-      url += `&name=${encodeURIComponent(searchQuery)}`;
-    }
-
-    if (filterTVShow) {
-      url += `&tvShows=${encodeURIComponent(filterTVShow)}`;
-    }
-
-    try {
-      const response = await axios.get(url);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to fetch characters");
-    }
+  if (searchQuery) {
+    url += `&name=${encodeURIComponent(searchQuery)}`;
   }
-);
+
+  if (filterTVShow) {
+    url += `&tvShows=${encodeURIComponent(filterTVShow)}`;
+  }
+
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error || error.message || "Failed to fetch characters";
+    return rejectWithValue(errorMessage);
+  }
+});
 
 const characterSlice = createSlice({
   name: "characters",
@@ -85,9 +85,6 @@ const characterSlice = createSlice({
       state.filterTVShow = action.payload;
       state.page = 1;
     },
-    setSortOrder(state, action: PayloadAction<"asc" | "desc">) {
-      state.sortOrder = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -111,7 +108,7 @@ const characterSlice = createSlice({
       .addCase(fetchCharacters.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-        state.characters = []; // Clear characters on error
+        state.characters = [];
         state.totalPages = 0;
       });
   },
@@ -122,7 +119,6 @@ export const {
   setPageSize,
   setSearchQuery,
   setFilterTVShow,
-  setSortOrder,
   openModal,
   closeModal,
 } = characterSlice.actions;
