@@ -16,7 +16,7 @@ interface CharactersState {
   selectedCharacterId: number | null;
 }
 
-export function createMockStore(preloadedState: { characters: Character[] }) {
+export function createMockStore(preloadedState: { characters: Character[], isModalOpen: boolean, selectedCharacterId: number }) {
   const initialState: CharactersState = {
     characters: preloadedState.characters,
     loading: false,
@@ -27,8 +27,8 @@ export function createMockStore(preloadedState: { characters: Character[] }) {
     searchQuery: '',
     filterTVShow: '',
     sortOrder: 'asc',
-    isModalOpen: false,
-    selectedCharacterId: null,
+    isModalOpen: preloadedState.isModalOpen || false,
+    selectedCharacterId: preloadedState.selectedCharacterId || null,
   };
 
   return configureStore({

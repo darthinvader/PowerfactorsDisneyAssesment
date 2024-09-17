@@ -22,7 +22,11 @@ const sampleCharacter: Character = {
 };
 
 // Create a mock store with the sample character
-const mockStore = createMockStore({ characters: [sampleCharacter] });
+const mockStore = createMockStore({
+  characters: [sampleCharacter],
+  isModalOpen: true,
+  selectedCharacterId: 1,
+});
 
 export default {
   title: 'Components/CharacterModal',
@@ -38,22 +42,10 @@ export default {
   ],
 } as Meta;
 
-const Template: StoryFn = (args) => <CharacterModal {...args} />;
+const Template: StoryFn = () => (
+  <Provider store={mockStore}>
+    <CharacterModal />
+  </Provider>
+);
 
 export const Default = Template.bind({});
-Default.args = {
-  isOpen: true,
-  characterId: sampleCharacter._id,
-};
-
-export const Skeleton = Template.bind({});
-Skeleton.args = {
-  isOpen: true,
-  characterId: null,
-};
-
-export const Closed = Template.bind({});
-Closed.args = {
-  isOpen: false,
-  characterId: sampleCharacter._id,
-};
